@@ -1,24 +1,33 @@
-
 enum class Colours{
-    BLUE, GREEN, YELLOW, RED, PURPLE, ORANGE
+    BLUE, GREEN, YELLOW, RED, PURPLE, ORANGE, BLANK
 }
 
 //Ask the player to choose the colours wanted to test.
 fun getColours(): MutableList<Colours>{
     val chosenColour = mutableListOf<Colours>()
 
-    println("Colours to choose from: Blue, Green, Yellow, Red, Purple, Orange")
+    println("Colours to choose from: (B)lue, (G)reen, (Y)ellow, (R)ed, (P)urple, (O)range")
     while(chosenColour.size < 4){
         print("Please enter colour for #${chosenColour.size +1}: ")
-        val choice = readln()
-        if(Colours.values().map { it.name}.contains(choice.uppercase())) {
+        var choice = readln().uppercase()
+        if(choice.length == 1){
+            when(choice){
+                "B" -> choice = "BLUE"
+                "G" -> choice = "GREEN"
+                "Y" -> choice = "YELLOW"
+                "R" -> choice = "RED"
+                "P" -> choice = "PURPLE"
+                "O" -> choice = "ORANGE"
+            }
+        }
+        if(Colours.values().map { it.name}.contains(choice)) {
             when (choice) {
-                "blue" -> chosenColour.add(Colours.BLUE)
-                "green" -> chosenColour.add(Colours.GREEN)
-                "yellow" -> chosenColour.add(Colours.YELLOW)
-                "red" -> chosenColour.add(Colours.RED)
-                "purple" -> chosenColour.add(Colours.PURPLE)
-                "orange" -> chosenColour.add(Colours.ORANGE)
+                "BLUE"-> chosenColour.add(Colours.BLUE)
+                "GREEN" -> chosenColour.add(Colours.GREEN)
+                "YELLOW" -> chosenColour.add(Colours.YELLOW)
+                "RED" -> chosenColour.add(Colours.RED)
+                "PURPLE" -> chosenColour.add(Colours.PURPLE)
+                "ORANGE" -> chosenColour.add(Colours.ORANGE)
             }
         }
         else println("$choice is not an option. Please choose again.")
@@ -29,30 +38,51 @@ fun getColours(): MutableList<Colours>{
 //Make the code to guess.
 fun codeMaker(): MutableList<Colours>{
     val code = mutableListOf<Colours>()
-    for(colour in 1..4){
-        code.add(Colours.values().random())
+    while(code.size < 4){
+        val colour = Colours.values().random()
+        if(colour != Colours.BLANK){
+            code.add(colour)
+        }
     }
-    code.forEach(::println)
+    code.forEach { print("$it, ") }
+    println()
     return code
 }
 
-fun checkCode(code : MutableList<Colours>, guess : MutableList<Colours>){
+fun checkCode(code : MutableList<Colours>, guess : MutableList<Colours>): MutableList<Char>{
+
+    val peg = mutableListOf<Char>()
+
     if(code == guess){
         println("Congratulations. You won!")
     }
     else{
-        println("WRONG!!!!!!!!!!!!")
-        guess.forEach {
+        println("Incorrect choices!")
 
+        for(i in 0..3){
+            if(guess[i] == code[i]){
+                peg.add('b')
+                code[i] = Colours.BLANK
+            }
+            else if(code.contains(guess[i])){
+                peg.add('w')
+                code[i] = Colours.BLANK
+            }
         }
     }
+//    peg.forEach{print("$it, ")}
+    peg.shuffle()
+    return peg
 }
-fun main(){
 
+//fun pegs(peg : List<Char>){
+//
+//
+//}
+fun main(){
     val code = codeMaker()
     val choseColour = getColours()
     checkCode(code, choseColour)
-
 
 
 
