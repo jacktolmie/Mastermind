@@ -1,5 +1,5 @@
 enum class Colours{
-    BLUE, GREEN, YELLOW, RED, PURPLE, ORANGE, EMPTY, BLANK
+    BLUE, GREEN, YELLOW, RED, PURPLE, ORANGE, EMPTY, CODEBLANK, GUESSBLANK
 }
 
 //Ask the player to choose the colours wanted to test.
@@ -55,7 +55,7 @@ fun codeMaker(): List<Colours>{
     */
     while(code.size < 4){
         val colour = Colours.values().random()
-        if(colour != Colours.BLANK){
+        if(colour != Colours.CODEBLANK){
             code.add(colour)
         }
     }
@@ -66,6 +66,7 @@ fun checkCode(code : List<Colours>, guess : MutableList<Colours>): MutableList<C
 
     val peg = mutableListOf<Char>()
     val copyCode = code.toMutableList()
+    val copyGuess = guess.toMutableList()
 
     /* If all the choices are right, and in the right order,
     *  fill list with 'b' and return.
@@ -84,7 +85,8 @@ fun checkCode(code : List<Colours>, guess : MutableList<Colours>): MutableList<C
             */
             if (guess[i] == copyCode[i]) {
                 peg.add('b')
-                copyCode[i] = Colours.BLANK
+                copyCode[i] = Colours.CODEBLANK
+                copyGuess[i] = Colours.GUESSBLANK
                 continue
             }
         }
@@ -93,14 +95,16 @@ fun checkCode(code : List<Colours>, guess : MutableList<Colours>): MutableList<C
       for(i in 0..3) {
 
           // Count how many times current guess is in the list.
-          val colourCount = copyCode.count {guess[i].name == it.name}
+          val colourCount = copyCode.count {copyGuess[i].name == it.name}
 
-          /* If the count is only one, then it will not match
-          *  any other part of the code. Add 'w' and set to BLANK.
+          /* If guess matches colour but not peg location,
+          *  add 'w' and set to BLANK.
           */
-          if(colourCount > 0){
+          if(colourCount  != 0){
               peg.add('w')
-              copyCode[copyCode.indexOf(guess[i])] = Colours.BLANK
+              //Removes the colour from the guesses and code copies.
+              copyCode[copyCode.indexOf(copyGuess[i])] = Colours.CODEBLANK
+              copyGuess[i] = Colours.GUESSBLANK
               continue
           }
       }
